@@ -103,16 +103,16 @@ const pascalCaseToCamelCase = (dbObject) => {
     playerName: dbObject.player_name,
   };
 };
-app.get("/matches/:matchId/players", async (request, response) => {
+app.get("/matches/:matchId/players/", async (request, response) => {
   const { matchId } = request.params;
   const getPlayersDetails = `
-    SELECT * 
-    FROM 
-    player_details 
-    NATURAL JOIN match_details 
-    WHERE match_id=${matchId}`;
+    SELECT
+	      player_details.player_id AS playerId,
+	      player_details.player_name AS playerName
+	    FROM player_match_score NATURAL JOIN player_details
+        WHERE match_id=${matchId}`;
   const playersList = await db.all(getPlayersDetails);
-  response.send(playersList.map((eachList) => pascalCaseToCamelCase(eachList)));
+  response.send(playersList);
 });
 ///
 app.get("/players/:playerId/playerScores/", async (request, response) => {
